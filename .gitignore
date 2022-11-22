@@ -1,0 +1,7 @@
+# Build files.
+/.bsp/
+target/
+
+# Other extras.
+*.jar
+*.class
