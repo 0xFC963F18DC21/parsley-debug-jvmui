@@ -6,6 +6,7 @@ inThisBuild(
     version          := "0.1.0-SNAPSHOT",
     organization     := "com.github",
     organizationName := "0xfc963f18dc21",
+    javacOptions    ++= Seq("-source", "1.8"),
     scalacOptions   ++= Seq("-deprecation", "-unchecked", "-feature")
   )
 )
