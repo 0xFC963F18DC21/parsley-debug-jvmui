@@ -25,10 +25,12 @@ lazy val root = (project in file("."))
     ...
     resolvers += "jitpack" at "https://jitpack.io",
     ...
-    libraryDependencies += "com.github.0xfc963f18dc21" % "Parsley-GUI-Debugger" % "master-SNAPSHOT",
+    libraryDependencies += "com.github.0xFC963F18DC21" % "Parsley-GUI-Debugger" % "master-SNAPSHOT",
     ...
   )
 ```
+
+Currently, this library only works with Scala 2.13.10.
 
 Documentation for usage is a TODO.
 
