@@ -7,6 +7,31 @@ Parsley, ala ANTLR's `grun` command.
 
 This project uses [ScalaFx](https://www.scalafx.org/) as its graphics user interface backend.
 
+## Usage with SBT
+
+Currently, this is not being uploaded to a library repository like Maven or SonaType. Therefore,
+JitPack is currently the best way to include this in your SBT build:
+
+1. Ensure that Parsley `v4.0.0` or higher is added as a dependency in your project.
+2. Add `resolvers += "jitpack" at "https://jitpack.io"` to your project settings in `build.sbt`.
+3. Finally, add `libraryDependencies += "com.github.0xfc963f18dc21" % "Parsley-GUI-Debugger" % "master-SNAPSHOT"`
+   to the same project's settings in `build.sbt`.
+
+You will end up with something like:
+
+```scala
+lazy val root = (project in file("."))
+  .settings(
+    ...
+    resolvers += "jitpack" at "https://jitpack.io",
+    ...
+    libraryDependencies += "com.github.0xfc963f18dc21" % "Parsley-GUI-Debugger" % "master-SNAPSHOT",
+    ...
+  )
+```
+
+Documentation for usage is a TODO.
+
 ## Issues
 
 This is still a very new library, so expect some bugs as both this library and Parsley 4 updates.
