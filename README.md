@@ -1,20 +1,25 @@
-# Parsley GUI Debugger
+# Parsley Debugger, JVM Frontend
 
 [Parsley](https://github.com/j-mie6/Parsley) is a fast parser-combinator library for Scala based on
 Haskell's [Parsec](https://hackage.haskell.org/package/parsec).
 This is a companion library aimed at providing a graphical debugger for your parsers written using
-Parsley, ala ANTLR's `grun` command.
+Parsley, ala ANTLR's `grun` command, but executed programmatically inside your parser's code intead
+of as a command-line tool.
 
-This project uses [ScalaFx](https://www.scalafx.org/) as its graphics user interface backend.
+This project uses [ScalaFx](https://www.scalafx.org/) as its graphics user interface backend, and
+will only run on the Java Virtual Machine (in other words, Scala Native and Scala.JS are unsupported
+by this frontend).
 
 ## Usage with SBT
+
+### Notice: The current version of this library depends on the `debug-dev` branch on [my fork of Parsley](https://github.com/0xFC963F18DC21/parsley), so it will be unusable until changes are merged into upstream.
 
 Currently, this is not being uploaded to a library repository like Maven or SonaType. Therefore,
 [JitPack](https://jitpack.io/) is currently the best way to include this in your SBT build:
 
-1. Ensure that Parsley `v4.0.0` or higher is added as a dependency in your project.
+1. Ensure that Parsley `v4.2.0` or higher is added as a dependency in your project.
 2. Add `resolvers += "jitpack" at "https://jitpack.io"` to your project settings in `build.sbt`.
-3. Finally, add `libraryDependencies += "com.github.0xfc963f18dc21" % "Parsley-GUI-Debugger" % "VERSION"`
+3. Finally, add `libraryDependencies += "com.github.0xfc963f18dc21" % "parsley-debug-jvmui" % "VERSION"`
    to the same project's settings in `build.sbt`, where `VERSION` is the tag you want to use.
    If you want the bleeding edge updates, use `master-SNAPSHOT` as the version.
 
@@ -26,7 +31,7 @@ lazy val root = (project in file("."))
     ...
     resolvers += "jitpack" at "https://jitpack.io",
     ...
-    libraryDependencies += "com.github.0xFC963F18DC21" % "Parsley-GUI-Debugger" % "VERSION",
+    libraryDependencies += "com.github.0xFC963F18DC21" % "parsley-debug-jvmui" % "VERSION",
     ...
   )
 ```
