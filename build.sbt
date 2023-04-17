@@ -11,11 +11,13 @@ inThisBuild(
   )
 )
 
+// Warning: currently uses the snapshot locally listed on the developer's computer.
 lazy val root = (project in file("."))
   .settings(
-    name                := "parsley-gui-db",
+    name                := "parsley-debug-jvmui",
     resolvers          ++= Opts.resolver.sonatypeOssSnapshots,
-    libraryDependencies += "org.scalafx" %% "scalafx" % "18.0.1-R28",
-    libraryDependencies += "com.github.j-mie6" %% "parsley" % "4.0.0+172-82da81f2-SNAPSHOT" % Provided,
-    libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.14" % Test
+    libraryDependencies += "org.scalafx"       %% "scalafx"       % "20.0.0-R31",
+    libraryDependencies += "com.github.j-mie6" %% "parsley"       % "4.2-c744911-SNAPSHOT",
+    libraryDependencies += "com.github.j-mie6" %% "parsley-debug" % "4.2-c744911-SNAPSHOT",
+    libraryDependencies += "org.scalatest"     %% "scalatest"     % "3.2.15" % Test
   )
