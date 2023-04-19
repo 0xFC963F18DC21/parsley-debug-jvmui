@@ -1,6 +1,28 @@
 package parsley.debugger.frontend
 
-import parsley.debugger.DebugTree
+import javafx.embed.swing.JFXPanel
+import parsley.debugger.{DebugTree, ParseAttempt}
+import parsley.debugger.frontend.internal.{
+  defaultFont,
+  simpleInsets,
+  AttemptList,
+  DefaultBGColour,
+  DefaultBackground,
+  InputHighlighter,
+  ThreeSplitPane,
+  TreeControls,
+  TreeDisplay
+}
+import scalafx.application.Platform
+import scalafx.beans.binding.Bindings
+import scalafx.beans.property.ObjectProperty
+import scalafx.geometry.Pos
+import scalafx.scene.Scene
+import scalafx.scene.control.ScrollPane
+import scalafx.scene.control.ScrollPane.ScrollBarPolicy
+import scalafx.scene.layout.Priority
+import scalafx.scene.text.{FontWeight, Text}
+import scalafx.stage.Stage
 
 /** ScalaFX (on JavaFX) renderer for debug trees. This frontend provides interactive visuals to
   * explore the parse / debug tree of a parser.
@@ -10,8 +32,65 @@ import parsley.debugger.DebugTree
   * node is selected.
   */
 class FxGUI private[parsley] () extends DebugGUI {
-  override def render(input: => String, tree: => DebugTree): Unit =
-    throw new NotImplementedError("Need to figure out ScalaFX first.")
+  override def render(input: => String, tree: => DebugTree): Unit = {
+    // This forces initialisation of JavaFX's internals.
+    // We don't actually need this for anything other than that.
+    new JFXPanel()
+
+    val selectedTree: ObjectProperty[Option[DebugTree]]   = ObjectProperty(None)
+    val selectedAtt: ObjectProperty[Option[ParseAttempt]] = ObjectProperty(None)
+
+    val inputDisplay = new InputHighlighter(input, selectedAtt)
+
+    Platform.runLater {
+      val rendered = new Stage {
+        title = "Parsley Tree Visualisation"
+        scene = new Scene(960, 600) {
+          fill = DefaultBGColour
+
+          private val sc      = this
+          private val attList = new ScrollPane {
+            outer =>
+            prefWidth  <== outer.width
+            prefHeight <== outer.height
+
+            hbarPolicy = ScrollBarPolicy.Never
+            vbarPolicy = ScrollBarPolicy.Never
+
+            content <== Bindings.createObjectBinding(
+              () =>
+                selectedTree() match {
+                  case None       =>
+                    new Text {
+                      text = "No Tree Selected"
+                      font = defaultFont(2, FontWeight.Bold)
+
+                      hgrow = Priority.Always
+                      vgrow = Priority.Always
+
+                      alignmentInParent = Pos.Center
+                    }.delegate
+                  case Some(tree) =>
+                    selectedAtt() = None
+                    new AttemptList(sc, tree, selectedAtt).delegate
+                },
+              selectedTree
+            )
+          }
+
+          content = new ThreeSplitPane(
+            this,
+            new TreeControls(this, new TreeDisplay(this, tree, selectedTree)),
+            attList,
+            inputDisplay
+          )
+        }
+      }
+
+      rendered.showAndWait()
+      // No need to exit.
+    }
+  }
 }
 
 /** Instance manager for FxGUI instances. */

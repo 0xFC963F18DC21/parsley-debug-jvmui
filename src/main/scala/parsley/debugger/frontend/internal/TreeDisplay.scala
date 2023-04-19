@@ -1,38 +1,32 @@
 package parsley.debugger.frontend.internal
 
+import javafx.event.EventHandler
+import javafx.scene.input.MouseEvent
 import parsley.debugger.DebugTree
 import parsley.debugger.frontend.internal.TreeDisplay.mkTree
 import scalafx.Includes._
 import scalafx.beans.binding.Bindings
 import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 import scalafx.geometry.{Insets, Pos}
+import scalafx.scene.Scene
 import scalafx.scene.control.ScrollPane
 import scalafx.scene.input.MouseButton
-import scalafx.scene.layout.{
-  Background,
-  Border,
-  BorderStrokeStyle,
-  GridPane,
-  Pane,
-  Priority,
-  StackPane
-}
+import scalafx.scene.layout._
 import scalafx.scene.paint.Color
-import scalafx.scene.text.{Font, FontWeight, Text}
+import scalafx.scene.text.{FontWeight, Text}
 
 import scala.collection.mutable
 
 private[frontend] class TreeDisplay(
+  outer: Scene,
   tree: DebugTree,
   selected: ObjectProperty[Option[DebugTree]]
-) extends ScrollPane { outer =>
+) extends ScrollPane {
   // Set visual parameters.
   prefWidth  <== outer.width
   prefHeight <== outer.height
 
   alignmentInParent = Pos.Center
-
-  padding = simpleInsets(2)
 
   background = DefaultBackground
 
@@ -121,7 +115,7 @@ private[frontend] object TreeDisplay {
     val unfolded = BooleanProperty(true)
     folds.append(unfolded)
 
-    rootNode.onMouseClicked = event => {
+    val foldHandler: EventHandler[MouseEvent] = (event: MouseEvent) => {
       if (event.getButton == MouseButton.Secondary.delegate) {
         unfolded() = !unfolded()
         for (elem <- treeGrid.children.filterNot(_ == rootNode.delegate)) {
@@ -129,6 +123,12 @@ private[frontend] object TreeDisplay {
           elem.setManaged(unfolded())
         }
       }
+    }
+
+    val selectHandler = rootNode.onMouseClicked()
+    rootNode.onMouseClicked = event => {
+      selectHandler.handle(event)
+      foldHandler.handle(event)
     }
 
     rootNode.border <== when(unfolded) choose Border.Empty otherwise simpleBorder(
@@ -164,7 +164,7 @@ private[frontend] object TreeDisplay {
       // Name in a white box.
       val name = new Text {
         text = dtree.parserName
-        font = defaultFont(1, FontWeight.Black)
+        font = defaultFont(1.5, FontWeight.Black)
         alignmentInParent = Pos.Center
       }
 

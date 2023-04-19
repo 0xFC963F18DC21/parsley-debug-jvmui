@@ -16,10 +16,12 @@ import scalafx.scene.text.{Font, FontWeight}
 // This will contain common constants and methods.
 package object internal {
   // Default background; #f4f4f4.
+  private[frontend] val DefaultBGColour: Color = Color.rgb(244, 244, 244)
+
   private[frontend] val DefaultBackground: Background = new Background(
     Array(
       new BackgroundFill(
-        Color.rgb(244, 244, 244),
+        DefaultBGColour,
         CornerRadii.Empty,
         Insets.Empty
       )

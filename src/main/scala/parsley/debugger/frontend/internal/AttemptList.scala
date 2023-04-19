@@ -5,16 +5,19 @@ import parsley.debugger.{DebugTree, ParseAttempt}
 import scalafx.beans.binding.Bindings
 import scalafx.beans.property.ObjectProperty
 import scalafx.geometry.Pos
+import scalafx.scene.Scene
 import scalafx.scene.control.ScrollPane
+import scalafx.scene.control.ScrollPane.ScrollBarPolicy
 import scalafx.scene.input.MouseButton
 import scalafx.scene.layout.{GridPane, Priority}
 import scalafx.scene.paint.Color
 import scalafx.scene.text.{FontWeight, Text}
 
 private[frontend] class AttemptList(
+  outer: Scene,
   dtree: DebugTree,
   selected: ObjectProperty[Option[ParseAttempt]]
-) extends ScrollPane { outer =>
+) extends ScrollPane {
   // Makes sure our bounds don't overflow:
   prefWidth  <== outer.width
   prefHeight <== outer.height
@@ -23,6 +26,9 @@ private[frontend] class AttemptList(
   fitToWidth = true
 
   background = DefaultBackground
+
+  hbarPolicy = ScrollBarPolicy.Never
+  vbarPolicy = ScrollBarPolicy.AsNeeded
 
   // Clear selected if right-clicked.
   onMouseClicked = event => {
@@ -61,10 +67,10 @@ private[frontend] class Attempt(
   // Visual parameters.
   background <== colorBinding
 
-  padding = simpleInsets(1)
-
   hgap = relativeSize(1)
   vgap = relativeSize(0.5)
+
+  padding = simpleInsets(1)
 
   prefWidth <== outer.width
 
@@ -83,7 +89,9 @@ private[frontend] class Attempt(
   // Contents.
   add(
     new Text {
-      text = {
+      text = if (att.fromOffset == att.toOffset) {
+        "Parser does not consume input."
+      } else {
         val untilLB  = att.rawInput.takeWhile(!"\r\n".contains(_))
         val addition = if (att.rawInput.length > untilLB.length) " [...]" else ""
 
@@ -97,7 +105,9 @@ private[frontend] class Attempt(
 
   add(
     new Text {
-      text = s"${att.fromPos} to ${att.toPos}"
+      text =
+        if (att.fromOffset == att.toOffset) "N/A"
+        else s"${att.fromPos} to ${att.toPos}"
     },
     1,
     1
@@ -106,7 +116,7 @@ private[frontend] class Attempt(
   add(
     new Text {
       text = if (att.success) "✓" else "✗"
-      font = defaultFont(2, FontWeight.Black)
+      font = defaultFont(2.5, FontWeight.Black)
     },
     0,
     0,
