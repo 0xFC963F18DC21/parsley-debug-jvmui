@@ -18,7 +18,7 @@ lazy val root = (project in file("."))
     resolvers          ++= Opts.resolver.sonatypeOssSnapshots,
     // ScalaFX v19.0.0-R30 is the latest supported by Java 8.
     libraryDependencies += "org.scalafx"       %% "scalafx"       % "19.0.0-R30",
-    libraryDependencies += "com.github.j-mie6" %% "parsley"       % "4.2-1ded9c4-SNAPSHOT",
-    libraryDependencies += "com.github.j-mie6" %% "parsley-debug" % "4.2-1ded9c4-SNAPSHOT",
+    libraryDependencies += "com.github.j-mie6" %% "parsley"       % "4.2-55ecf1e-SNAPSHOT",
+    libraryDependencies += "com.github.j-mie6" %% "parsley-debug" % "4.2-55ecf1e-SNAPSHOT",
     libraryDependencies += "org.scalatest"     %% "scalatest"     % "3.2.15" % Test
   )
