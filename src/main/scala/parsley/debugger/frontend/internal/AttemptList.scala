@@ -88,7 +88,7 @@ private[frontend] class Attempt(
   add(
     new Text {
       text = if (att.fromOffset == att.toOffset) {
-        "*** Parser does not consume input. ***"
+        "*** Parser did not consume input. ***"
       } else {
         val untilLB  = att.rawInput.takeWhile(!"\r\n".contains(_))
         val addition = if (att.rawInput.length > untilLB.length) " [...]" else ""
