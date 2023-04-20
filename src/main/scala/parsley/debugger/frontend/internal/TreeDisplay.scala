@@ -75,10 +75,11 @@ private[frontend] object TreeDisplay {
       alignmentInParent = Pos.Center
     }
 
-    val pane = new GridPane {
+    val pane = new VBox {
       padding = simpleInsets(0.5)
-      vgap = relativeSize(0.5)
+      spacing = relativeSize(0.5)
       alignmentInParent = Pos.Center
+      alignment = Pos.Center
       hgrow = Priority.Always
       background <== colourBinding
 
@@ -90,7 +91,7 @@ private[frontend] object TreeDisplay {
       }
     }
 
-    pane.addColumn(0, nameText, succText)
+    pane.children.addAll(nameText, succText)
     pane
   }
 
@@ -115,13 +116,14 @@ private[frontend] object TreeDisplay {
     val unfolded = BooleanProperty(true)
     folds.append(unfolded)
 
+    treeGrid.children.filterNot(_ == rootNode.delegate).foreach { node =>
+      node.visible <== unfolded
+      node.managed <== unfolded
+    }
+
     val foldHandler: EventHandler[MouseEvent] = (event: MouseEvent) => {
       if (event.getButton == MouseButton.Secondary.delegate) {
         unfolded() = !unfolded()
-        for (elem <- treeGrid.children.filterNot(_ == rootNode.delegate)) {
-          elem.setVisible(unfolded())
-          elem.setManaged(unfolded())
-        }
       }
     }
 
@@ -201,11 +203,12 @@ private[frontend] object TreeDisplay {
       val nameUnfolded = BooleanProperty(true)
       folds.append(nameUnfolded)
 
+      spacer.visible <== nameUnfolded
+      spacer.managed <== nameUnfolded
+
       whiteBox.onMouseClicked = event => {
         if (event.getButton == MouseButton.Secondary.delegate) {
           nameUnfolded() = !nameUnfolded()
-          spacer.setVisible(nameUnfolded())
-          spacer.setManaged(nameUnfolded())
         }
       }
 

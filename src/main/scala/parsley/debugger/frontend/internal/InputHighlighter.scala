@@ -4,6 +4,8 @@ import parsley.debugger.ParseAttempt
 import scalafx.beans.binding.Bindings
 import scalafx.beans.property.ObjectProperty
 import scalafx.scene.control.ScrollPane
+import scalafx.scene.control.ScrollPane.ScrollBarPolicy
+import scalafx.scene.layout.Priority
 import scalafx.scene.paint.Color
 import scalafx.scene.text.{FontWeight, Text, TextFlow}
 
@@ -53,15 +55,13 @@ private[frontend] class InputHighlighter(
     font = monoFont(1.5)
   }
 
-  private val completed = new TextFlow(before, during, after) { outer =>
-    prefWidth  <== outer.width
-    prefHeight <== outer.height
-  }
+  private val completed = new TextFlow(before, during, after)
 
   // Finally set up our scrollable.
-  prefWidth  <== outer.width
-  prefHeight <== outer.height
-  fitToWidth = true
+  hbarPolicy = ScrollBarPolicy.Always
+  vbarPolicy = ScrollBarPolicy.Always
+
+  hgrow = Priority.Always
 
   background = DefaultBackground
 

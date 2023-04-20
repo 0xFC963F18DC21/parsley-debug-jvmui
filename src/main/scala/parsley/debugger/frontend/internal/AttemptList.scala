@@ -5,30 +5,25 @@ import parsley.debugger.{DebugTree, ParseAttempt}
 import scalafx.beans.binding.Bindings
 import scalafx.beans.property.ObjectProperty
 import scalafx.geometry.Pos
-import scalafx.scene.Scene
 import scalafx.scene.control.ScrollPane
 import scalafx.scene.control.ScrollPane.ScrollBarPolicy
 import scalafx.scene.input.MouseButton
-import scalafx.scene.layout.{GridPane, Priority}
+import scalafx.scene.layout.{GridPane, Priority, VBox}
 import scalafx.scene.paint.Color
 import scalafx.scene.text.{FontWeight, Text}
 
 private[frontend] class AttemptList(
-  outer: Scene,
-  dtree: DebugTree,
+  dtree: ObjectProperty[Option[DebugTree]],
   selected: ObjectProperty[Option[ParseAttempt]]
-) extends ScrollPane {
-  // Makes sure our bounds don't overflow:
-  prefWidth  <== outer.width
-  prefHeight <== outer.height
-
+) extends ScrollPane { outer =>
   // Makes sure the content doesn't go off the sides:
   fitToWidth = true
+  hgrow = Priority.Always
 
   background = DefaultBackground
 
-  hbarPolicy = ScrollBarPolicy.Never
-  vbarPolicy = ScrollBarPolicy.AsNeeded
+  hbarPolicy = ScrollBarPolicy.AsNeeded
+  vbarPolicy = ScrollBarPolicy.Always
 
   // Clear selected if right-clicked.
   onMouseClicked = event => {
@@ -38,18 +33,21 @@ private[frontend] class AttemptList(
   }
 
   // Contents.
-  private val allList = new GridPane {
-    alignment = Pos.Center
-    alignmentInParent = Pos.TopLeft
-    prefWidth <== outer.width
-  }
-
-  for ((att, ix) <- dtree.parseResults.zipWithIndex) {
-    allList.add(new Attempt(att, selected), 0, ix)
-  }
-
   // Finally set content to the list of attempts.
-  content = allList
+  content <== Bindings.createObjectBinding(
+    () => {
+      val allList = new VBox()
+
+      if (dtree().isDefined) {
+        for (att <- dtree().get.parseResults.map(new Attempt(_, selected))) {
+          allList.children.add(att)
+        }
+      }
+
+      allList.delegate
+    },
+    dtree
+  )
 }
 
 private[frontend] class Attempt(
@@ -72,7 +70,7 @@ private[frontend] class Attempt(
 
   padding = simpleInsets(1)
 
-  prefWidth <== outer.width
+//  prefWidth <== outer.width
 
   hgrow = Priority.Always
 
@@ -90,7 +88,7 @@ private[frontend] class Attempt(
   add(
     new Text {
       text = if (att.fromOffset == att.toOffset) {
-        "Parser does not consume input."
+        "*** Parser does not consume input. ***"
       } else {
         val untilLB  = att.rawInput.takeWhile(!"\r\n".contains(_))
         val addition = if (att.rawInput.length > untilLB.length) " [...]" else ""
