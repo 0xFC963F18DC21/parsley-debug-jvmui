@@ -2,7 +2,7 @@ package parsley.debugger.frontend.internal
 
 import javafx.event.EventHandler
 import javafx.scene.input.MouseEvent
-import parsley.debugger.{DebugTree, ParseAttempt}
+import parsley.debugger.DebugTree
 import parsley.debugger.frontend.internal.TreeDisplay.mkTree
 import scalafx.Includes._
 import scalafx.beans.binding.Bindings
@@ -21,8 +21,7 @@ import scala.collection.mutable
 private[frontend] class TreeDisplay(
   outer: Scene,
   tree: DebugTree,
-  selected: ObjectProperty[Option[DebugTree]],
-  selectedAtt: ObjectProperty[Option[ParseAttempt]]
+  selected: ObjectProperty[Option[DebugTree]]
 ) extends ScrollPane {
   // Set visual parameters.
   prefHeight <== outer.height
@@ -37,7 +36,7 @@ private[frontend] class TreeDisplay(
   implicit private val foldSetters: mutable.ListBuffer[BooleanProperty] =
     new mutable.ListBuffer()
 
-  content = mkTree(tree, selected, selectedAtt)
+  content = mkTree(tree, selected)
   hvalue = 0.5 // Set the scroll to the centre horizontally.
 
   def foldAll(): Unit = for (unfolded <- foldSetters) {
@@ -52,15 +51,13 @@ private[frontend] class TreeDisplay(
 }
 
 private[frontend] object TreeDisplay {
-  def mkDTreeRect(
+  private def mkDTreeRect(
     dtree: DebugTree,
-    selected: ObjectProperty[Option[DebugTree]],
-    selectedAtt: ObjectProperty[Option[ParseAttempt]]
+    selected: ObjectProperty[Option[DebugTree]]
   ): Pane = {
     val nameText = new Text {
       text = dtree.internalName
       font = defaultFont(1, FontWeight.Black)
-      hgrow = Priority.Always
       alignmentInParent = Pos.Center
     }
 
@@ -77,9 +74,8 @@ private[frontend] object TreeDisplay {
     )
 
     val succText = new Text {
-      text = s"$successes / $totalAttempts"
-      font = monoFont(1)
-      hgrow = Priority.Always
+      text = if (dtree.parseResults.exists(_.success)) "✓" else "✗"
+      font = defaultFont(1)
       alignmentInParent = Pos.Center
     }
 
@@ -93,7 +89,6 @@ private[frontend] object TreeDisplay {
 
       onMouseClicked = event => {
         if (event.getButton == MouseButton.Primary.delegate) {
-          selectedAtt() = None
           if (selected().contains(dtree)) selected() = None
           else selected() = Some(dtree)
         }
@@ -106,12 +101,11 @@ private[frontend] object TreeDisplay {
 
   def mkTree(
     dtree: DebugTree,
-    selected: ObjectProperty[Option[DebugTree]],
-    selectedAtt: ObjectProperty[Option[ParseAttempt]]
+    selected: ObjectProperty[Option[DebugTree]]
   )(implicit
     folds: mutable.ListBuffer[BooleanProperty]
   ): Pane = {
-    val rootNode = mkDTreeRect(dtree, selected, selectedAtt)
+    val rootNode = mkDTreeRect(dtree, selected)
     val columns  = dtree.nodeChildren.size
 
     val treeGrid = new GridPane {
@@ -122,9 +116,7 @@ private[frontend] object TreeDisplay {
     }
 
     treeGrid.add(rootNode, 0, 0, Math.max(columns, 1), 1)
-    for (
-      (pane, ix) <- dtree.nodeChildren.values.map(mkTree(_, selected, selectedAtt)).zipWithIndex
-    ) {
+    for ((pane, ix) <- dtree.nodeChildren.values.map(mkTree(_, selected)).zipWithIndex) {
       treeGrid.add(pane, ix, 1)
     }
 
@@ -158,7 +150,7 @@ private[frontend] object TreeDisplay {
     if (dtree.parserName == dtree.internalName) treeGrid
     else {
       // This is the inner box with the dotted border
-      val innerBox = new StackPane {
+      val innerBox = new HBox {
         padding = simpleInsets(2)
         alignmentInParent = Pos.Center
         alignment = Pos.Center
@@ -169,7 +161,7 @@ private[frontend] object TreeDisplay {
       innerBox.children.add(treeGrid)
 
       // Wrap the inner box in another pane
-      val spacer = new StackPane {
+      val spacer = new HBox {
         padding = simpleInsets(1)
         alignment = Pos.Center
         alignmentInParent = Pos.Center
@@ -210,6 +202,12 @@ private[frontend] object TreeDisplay {
       }
 
       whiteBox.children.add(name)
+
+      // Compensate for the white box for the inner panel:
+      innerBox.minWidth <== Bindings.createDoubleBinding(
+        () => whiteBox.width() + relativeSize(2),
+        whiteBox.width
+      )
 
       // The actual panel.
       panel.children.add(spacer)
