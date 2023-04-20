@@ -7,7 +7,7 @@ import parsley.debugger.frontend.internal.TreeDisplay.mkTree
 import scalafx.Includes._
 import scalafx.beans.binding.Bindings
 import scalafx.beans.property.{BooleanProperty, DoubleProperty, ObjectProperty}
-import scalafx.geometry.{Insets, Pos}
+import scalafx.geometry.{Insets, Orientation, Pos}
 import scalafx.scene.{Group, Scene}
 import scalafx.scene.control.ScrollPane
 import scalafx.scene.control.ScrollPane.ScrollBarPolicy
@@ -139,6 +139,16 @@ private[frontend] object TreeDisplay {
     treeGrid.add(rootNode, 0, 0, Math.max(columns, 1), 1)
     for ((pane, ix) <- dtree.nodeChildren.values.map(mkTree(_, selected)).zipWithIndex) {
       treeGrid.add(pane, ix, 1)
+    }
+
+    // Make the second row take up all the space if possible.
+    for (_ <- 1 to Math.max(columns, 1)) {
+      val cc = new ColumnConstraints {
+        hgrow = Priority.Always
+        fillWidth = true
+      }
+
+      treeGrid.columnConstraints.add(cc)
     }
 
     val unfolded = BooleanProperty(true)
