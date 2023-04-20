@@ -1,10 +1,9 @@
 package parsley.debugger.frontend.internal
 
 import scalafx.beans.binding.Bindings
-import scalafx.geometry.{Orientation, Pos}
-import scalafx.scene.Scene
+import scalafx.geometry.Pos
 import scalafx.scene.control.Button
-import scalafx.scene.layout.{GridPane, HBox, Priority, TilePane, VBox}
+import scalafx.scene.layout.GridPane
 
 private[frontend] class TreeControls(view: TreeDisplay) extends GridPane { outer =>
   add(view, 0, 0, 2, 1)
