@@ -6,22 +6,24 @@ import parsley.debugger.DebugTree
 import parsley.debugger.frontend.internal.TreeDisplay.mkTree
 import scalafx.Includes._
 import scalafx.beans.binding.Bindings
-import scalafx.beans.property.{BooleanProperty, ObjectProperty}
+import scalafx.beans.property.{BooleanProperty, DoubleProperty, ObjectProperty}
 import scalafx.geometry.{Insets, Pos}
-import scalafx.scene.Scene
+import scalafx.scene.{Group, Scene}
 import scalafx.scene.control.ScrollPane
 import scalafx.scene.control.ScrollPane.ScrollBarPolicy
 import scalafx.scene.input.MouseButton
 import scalafx.scene.layout._
 import scalafx.scene.paint.Color
 import scalafx.scene.text.{FontWeight, Text}
+import scalafx.scene.transform.Scale
 
 import scala.collection.mutable
 
 private[frontend] class TreeDisplay(
   outer: Scene,
   tree: DebugTree,
-  selected: ObjectProperty[Option[DebugTree]]
+  selected: ObjectProperty[Option[DebugTree]],
+  zoomLevel: DoubleProperty
 ) extends ScrollPane {
   // Set visual parameters.
   prefHeight <== outer.height
@@ -36,7 +38,26 @@ private[frontend] class TreeDisplay(
   implicit private val foldSetters: mutable.ListBuffer[BooleanProperty] =
     new mutable.ListBuffer()
 
-  content = mkTree(tree, selected)
+  private val treeView = new Group(mkTree(tree, selected))
+  treeView.transforms = Seq(
+    new Scale(1, 1) {
+      x      <== zoomLevel
+      y      <== zoomLevel
+      pivotX <== Bindings.createDoubleBinding(
+        () => treeView.layoutBounds().getWidth * hvalue(),
+        treeView.layoutBounds,
+        hvalue
+      )
+      pivotY <== Bindings.createDoubleBinding(
+        () => treeView.layoutBounds().getHeight * vvalue(),
+        treeView.layoutBounds,
+        vvalue
+      )
+    }
+  )
+
+  content = treeView
+
   hvalue = 0.5 // Set the scroll to the centre horizontally.
 
   def foldAll(): Unit = for (unfolded <- foldSetters) {

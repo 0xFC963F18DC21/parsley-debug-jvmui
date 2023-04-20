@@ -1,11 +1,15 @@
 package parsley.debugger.frontend.internal
 
 import scalafx.beans.binding.Bindings
+import scalafx.beans.property.DoubleProperty
 import scalafx.geometry.Pos
-import scalafx.scene.control.Button
+import scalafx.scene.control.{Button, Slider}
 import scalafx.scene.layout.GridPane
 
-private[frontend] class TreeControls(view: TreeDisplay) extends GridPane { outer =>
+private[frontend] class TreeControls(
+  view: TreeDisplay,
+  zoomLevel: DoubleProperty
+) extends GridPane { outer =>
   add(view, 0, 0, 2, 1)
 
   alignment = Pos.Center
@@ -35,6 +39,15 @@ private[frontend] class TreeControls(view: TreeDisplay) extends GridPane { outer
     alignmentInParent = Pos.Center
   }
 
-  add(unfold, 0, 1)
-  add(fold, 1, 1)
+  private val zoomBar = new Slider {
+    max = 1
+    min = 0.25
+    value = 1
+  }
+
+  zoomLevel <== zoomBar.value
+
+  add(zoomBar, 0, 1, 2, 1)
+  add(unfold, 0, 2)
+  add(fold, 1, 2)
 }
