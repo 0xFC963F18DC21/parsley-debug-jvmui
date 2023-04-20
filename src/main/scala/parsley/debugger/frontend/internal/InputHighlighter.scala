@@ -57,10 +57,11 @@ private[frontend] class InputHighlighter(
 
   private val completed = new TextFlow(before, during, after)
 
-  // Finally set up our scrollable.
-  hbarPolicy = ScrollBarPolicy.Always
-  vbarPolicy = ScrollBarPolicy.Always
+  // The scrollbars don't always have to be there.
+  hbarPolicy = ScrollBarPolicy.AsNeeded
+  vbarPolicy = ScrollBarPolicy.AsNeeded
 
+  // Finally set up our scrollable.
   hgrow = Priority.Always
 
   background = DefaultBackground

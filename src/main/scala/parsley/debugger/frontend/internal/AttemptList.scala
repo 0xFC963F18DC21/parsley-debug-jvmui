@@ -23,7 +23,7 @@ private[frontend] class AttemptList(
   background = DefaultBackground
 
   hbarPolicy = ScrollBarPolicy.AsNeeded
-  vbarPolicy = ScrollBarPolicy.Always
+  vbarPolicy = ScrollBarPolicy.AsNeeded
 
   // Clear selected if right-clicked.
   onMouseClicked = event => {
@@ -36,6 +36,9 @@ private[frontend] class AttemptList(
   // Finally set content to the list of attempts.
   content <== Bindings.createObjectBinding(
     () => {
+      // We also want to reset the scrollbar to the top, too.
+      vvalue = 0
+
       val allList = new VBox()
 
       if (dtree().isDefined) {

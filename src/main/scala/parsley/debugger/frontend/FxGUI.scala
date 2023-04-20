@@ -35,7 +35,7 @@ case object FxGUI extends DebugGUI {
 
           content = new ThreeSplitPane(
             this,
-            new TreeControls(new TreeDisplay(this, tree, selectedTree)),
+            new TreeControls(new TreeDisplay(this, tree, selectedTree, selectedAtt)),
             new HBox(new AttemptList(selectedTree, selectedAtt)),
             new HBox(inputDisplay)
           )

@@ -2,7 +2,7 @@ package parsley.debugger.frontend.internal
 
 import javafx.event.EventHandler
 import javafx.scene.input.MouseEvent
-import parsley.debugger.DebugTree
+import parsley.debugger.{DebugTree, ParseAttempt}
 import parsley.debugger.frontend.internal.TreeDisplay.mkTree
 import scalafx.Includes._
 import scalafx.beans.binding.Bindings
@@ -10,6 +10,7 @@ import scalafx.beans.property.{BooleanProperty, ObjectProperty}
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
 import scalafx.scene.control.ScrollPane
+import scalafx.scene.control.ScrollPane.ScrollBarPolicy
 import scalafx.scene.input.MouseButton
 import scalafx.scene.layout._
 import scalafx.scene.paint.Color
@@ -20,20 +21,23 @@ import scala.collection.mutable
 private[frontend] class TreeDisplay(
   outer: Scene,
   tree: DebugTree,
-  selected: ObjectProperty[Option[DebugTree]]
+  selected: ObjectProperty[Option[DebugTree]],
+  selectedAtt: ObjectProperty[Option[ParseAttempt]]
 ) extends ScrollPane {
   // Set visual parameters.
-  prefWidth  <== outer.width
   prefHeight <== outer.height
 
   alignmentInParent = Pos.Center
+
+  hbarPolicy = ScrollBarPolicy.AsNeeded
+  vbarPolicy = ScrollBarPolicy.AsNeeded
 
   background = DefaultBackground
 
   implicit private val foldSetters: mutable.ListBuffer[BooleanProperty] =
     new mutable.ListBuffer()
 
-  content = mkTree(tree, selected)
+  content = mkTree(tree, selected, selectedAtt)
   hvalue = 0.5 // Set the scroll to the centre horizontally.
 
   def foldAll(): Unit = for (unfolded <- foldSetters) {
@@ -48,7 +52,11 @@ private[frontend] class TreeDisplay(
 }
 
 private[frontend] object TreeDisplay {
-  def mkDTreeRect(dtree: DebugTree, selected: ObjectProperty[Option[DebugTree]]): Pane = {
+  def mkDTreeRect(
+    dtree: DebugTree,
+    selected: ObjectProperty[Option[DebugTree]],
+    selectedAtt: ObjectProperty[Option[ParseAttempt]]
+  ): Pane = {
     val nameText = new Text {
       text = dtree.internalName
       font = defaultFont(1, FontWeight.Black)
@@ -85,6 +93,7 @@ private[frontend] object TreeDisplay {
 
       onMouseClicked = event => {
         if (event.getButton == MouseButton.Primary.delegate) {
+          selectedAtt() = None
           if (selected().contains(dtree)) selected() = None
           else selected() = Some(dtree)
         }
@@ -95,10 +104,14 @@ private[frontend] object TreeDisplay {
     pane
   }
 
-  def mkTree(dtree: DebugTree, selected: ObjectProperty[Option[DebugTree]])(implicit
+  def mkTree(
+    dtree: DebugTree,
+    selected: ObjectProperty[Option[DebugTree]],
+    selectedAtt: ObjectProperty[Option[ParseAttempt]]
+  )(implicit
     folds: mutable.ListBuffer[BooleanProperty]
   ): Pane = {
-    val rootNode = mkDTreeRect(dtree, selected)
+    val rootNode = mkDTreeRect(dtree, selected, selectedAtt)
     val columns  = dtree.nodeChildren.size
 
     val treeGrid = new GridPane {
@@ -109,7 +122,9 @@ private[frontend] object TreeDisplay {
     }
 
     treeGrid.add(rootNode, 0, 0, Math.max(columns, 1), 1)
-    for ((pane, ix) <- dtree.nodeChildren.values.map(mkTree(_, selected)).zipWithIndex) {
+    for (
+      (pane, ix) <- dtree.nodeChildren.values.map(mkTree(_, selected, selectedAtt)).zipWithIndex
+    ) {
       treeGrid.add(pane, ix, 1)
     }
 
