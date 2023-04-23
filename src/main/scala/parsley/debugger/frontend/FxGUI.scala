@@ -1,10 +1,10 @@
 package parsley.debugger.frontend
 
 import javafx.embed.swing.JFXPanel
+import parsley.debugger.DebugTree
 import parsley.debugger.frontend.internal._
-import parsley.debugger.{DebugTree, ParseAttempt}
 import scalafx.application.Platform
-import scalafx.beans.property.ObjectProperty
+import scalafx.beans.property.{DoubleProperty, ObjectProperty}
 import scalafx.scene.Scene
 import scalafx.scene.layout.HBox
 import scalafx.stage.Stage
@@ -22,10 +22,10 @@ case object FxGUI extends DebugGUI {
     // We don't actually need this for anything other than that.
     new JFXPanel()
 
-    val selectedTree: ObjectProperty[Option[DebugTree]]   = ObjectProperty(None)
-    val selectedAtt: ObjectProperty[Option[ParseAttempt]] = ObjectProperty(None)
+    val selectedTree: ObjectProperty[Option[DebugTree]] = ObjectProperty(None)
+    val zoomLevel: DoubleProperty                       = DoubleProperty(1.0)
 
-    val inputDisplay = new InputHighlighter(input, selectedAtt)
+    val inputDisplay = new InputHighlighter(input, selectedTree)
 
     Platform.runLater {
       val rendered = new Stage {
@@ -35,8 +35,8 @@ case object FxGUI extends DebugGUI {
 
           content = new ThreeSplitPane(
             this,
-            new TreeControls(new TreeDisplay(this, tree, selectedTree, selectedAtt)),
-            new HBox(new AttemptList(selectedTree, selectedAtt)),
+            new TreeControls(new TreeDisplay(this, tree, selectedTree, zoomLevel), zoomLevel),
+            new AttemptInfo(selectedTree),
             new HBox(inputDisplay)
           )
         }
