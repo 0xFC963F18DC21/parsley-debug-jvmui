@@ -41,8 +41,13 @@ private[frontend] class TreeControls(
 
   private val zoomBar = new Slider {
     max = 1
-    min = 0.25
+    min = 0.1
     value = 1
+
+    showTickLabels = true
+    showTickMarks = true
+    majorTickUnit = 0.1
+    minorTickCount = 1
   }
 
   zoomLevel <== zoomBar.value
