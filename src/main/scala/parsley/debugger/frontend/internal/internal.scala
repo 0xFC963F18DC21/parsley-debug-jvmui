@@ -32,17 +32,6 @@ package object internal {
 
   private[frontend] val FailureColour: Color = Color.rgb(201, 115, 109)
 
-  private[this] def lerp(v0: Double, v1: Double, t: Double): Double =
-    (1 - t) * v0 + t * v1
-
-  private[frontend] def lerpColour(c1: Color, c2: Color, t: Double): Color =
-    Color.color(
-      lerp(c1.red, c2.red, t),
-      lerp(c1.green, c2.green, t),
-      lerp(c1.blue, c2.blue, t),
-      lerp(c1.opacity, c2.opacity, t)
-    )
-
   private[frontend] def simpleBackground(fill: Paint): Background = new Background(
     Array(
       new BackgroundFill(

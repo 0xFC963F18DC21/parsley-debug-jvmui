@@ -46,15 +46,4 @@ case object FxGUI extends DebugGUI {
       // No need to exit.
     }
   }
-
-  /** Get a FxGUI instance for rendering debug trees. These may be re-used by calling
-    * [[FxGUI.render]] again.
-    *
-    * It is recommended that you assign this to an implicit value before calling
-    * [[parsley.debugger.attachDebuggerGUI]].
-    *
-    * @return
-    *   A fresh instance of [[FxGUI]] for displaying debug trees.
-    */
-  def newInstance: FxGUI.type = this
 }

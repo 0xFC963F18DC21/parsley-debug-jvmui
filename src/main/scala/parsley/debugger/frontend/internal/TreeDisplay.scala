@@ -7,7 +7,7 @@ import parsley.debugger.frontend.internal.TreeDisplay.mkTree
 import scalafx.Includes._
 import scalafx.beans.binding.Bindings
 import scalafx.beans.property.{BooleanProperty, DoubleProperty, ObjectProperty}
-import scalafx.geometry.{Insets, Orientation, Pos}
+import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.{Group, Scene}
 import scalafx.scene.control.ScrollPane
 import scalafx.scene.control.ScrollPane.ScrollBarPolicy
@@ -76,30 +76,39 @@ private[frontend] object TreeDisplay {
     dtree: DebugTree,
     selected: ObjectProperty[Option[DebugTree]]
   ): Pane = {
+    // Shows the displayed name (renamed or otherwise) of the parser that produced the result tied
+    // to this visual tree node.
     val nameText = new Text {
       text = dtree.internalName
       font = defaultFont(1, FontWeight.Black)
       alignmentInParent = Pos.Center
     }
 
-    val totalAttempts = dtree.parseResults.size
-    val successes     = dtree.parseResults.count(_.success)
-    val ratio         = successes / totalAttempts.toDouble
-
+    // Sets the colour of the rectangle to the respective success or failure colour depending on
+    // if the parse result of the tree node was a success or failure.
     val colourBinding = Bindings.createObjectBinding(
       () => {
         if (selected().contains(dtree)) simpleBackground(Color.Yellow).delegate
-        else simpleBackground(lerpColour(FailureColour, SuccessColour, ratio)).delegate
+        else
+          simpleBackground(
+            dtree.parseResults
+              .map(_.success)
+              .orElse(Some(false))
+              .map(if (_) SuccessColour else FailureColour)
+              .get
+          ).delegate
       },
       selected
     )
 
+    // A simple textual indicator of successes, for easier use by red-green colourblind users.
     val succText = new Text {
       text = if (dtree.parseResults.exists(_.success)) "✓" else "✗"
       font = defaultFont(1)
       alignmentInParent = Pos.Center
     }
 
+    // The display rectangle for this tree node.
     val pane = new VBox {
       padding = simpleInsets(0.5)
       spacing = relativeSize(0.5)
@@ -126,6 +135,7 @@ private[frontend] object TreeDisplay {
   )(implicit
     folds: mutable.ListBuffer[BooleanProperty]
   ): Pane = {
+    // Start with the current tree node's rectangle...
     val rootNode = mkDTreeRect(dtree, selected)
     val columns  = dtree.nodeChildren.size
 
@@ -136,6 +146,7 @@ private[frontend] object TreeDisplay {
       background = DefaultBackground
     }
 
+    // ... then get all the rectangles of the child nodes.
     treeGrid.add(rootNode, 0, 0, Math.max(columns, 1), 1)
     for ((pane, ix) <- dtree.nodeChildren.values.map(mkTree(_, selected)).zipWithIndex) {
       treeGrid.add(pane, ix, 1)
@@ -154,18 +165,23 @@ private[frontend] object TreeDisplay {
     val unfolded = BooleanProperty(true)
     folds.append(unfolded)
 
+    // Get all the children to hide if this node is folded.
     treeGrid.children.filterNot(_ == rootNode.delegate).foreach { node =>
       node.visible <== unfolded
       node.managed <== unfolded
     }
 
+    // Allows the use of right click / MOUSE2 to hide the children of the right-clicked node.
     val foldHandler: EventHandler[MouseEvent] = (event: MouseEvent) => {
       if (event.getButton == MouseButton.Secondary.delegate) {
         unfolded() = !unfolded()
       }
     }
 
+    // Selects this current node for detailed display, defined in mkDTreeRect.
     val selectHandler = rootNode.onMouseClicked()
+
+    // Ensures that the mouse click event can go to both the select and fold handlers.
     rootNode.onMouseClicked = event => {
       selectHandler.handle(event)
       foldHandler.handle(event)
