@@ -60,14 +60,21 @@ private[frontend] class TreeDisplay(
 
   hvalue = 0.5 // Set the scroll to the centre horizontally.
 
-  def foldAll(): Unit = for (unfolded <- foldSetters) {
+  def foldAll(): Unit = {
     // False hides things, so is the folded state.
-    unfolded() = false
+    foldSetters.head() = false
+    for (unfolded <- foldSetters.tail) {
+      unfolded() = false
+    }
   }
 
-  def unfoldAll(): Unit = for (unfolded <- foldSetters) {
+  def unfoldAll(): Unit = {
     // True is the unfolded state.
-    unfolded() = true
+    foldSetters.head() = false
+    for (unfolded <- foldSetters.tail) {
+      unfolded() = true
+    }
+    foldSetters.head() = true
   }
 }
 
@@ -163,7 +170,7 @@ private[frontend] object TreeDisplay {
     }
 
     val unfolded = BooleanProperty(true)
-    folds.append(unfolded)
+    folds.prepend(unfolded)
 
     // Get all the children to hide if this node is folded.
     treeGrid.children.filterNot(_ == rootNode.delegate).foreach { node =>
@@ -261,7 +268,7 @@ private[frontend] object TreeDisplay {
       panel.children.add(whiteBox)
 
       val nameUnfolded = BooleanProperty(true)
-      folds.append(nameUnfolded)
+      folds.prepend(nameUnfolded)
 
       spacer.visible <== nameUnfolded
       spacer.managed <== nameUnfolded
