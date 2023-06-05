@@ -15,6 +15,21 @@ import scalafx.stage.Stage
   * Nodes can be expanded for information or moved around in order to re-organise them, and a live
   * input display will show what part of the input a parser has tried to parse when its respective
   * node is selected.
+  *
+  * The primary mouse button (left-click for most users) is used to select nodes to show the parsed
+  * input for that node and possibly its result.
+  *
+  * The secondary mouse button (right-click for most users) is used to fold or unfold nodes on the
+  * tree. It is possible to fold both individual parser nodes (the red / green rectangles) and the
+  * named nodes (names on dotted borders).
+  *
+  * The Unfold All / Fold All buttons are relatively self-explanatory, as for the zoom bar located
+  * above said buttons.
+  *
+  * On the side of the window away from the tree display, a node info display and parse input
+  * display can be found. The node info display shows more information about a parse attempt (its
+  * offsets, result, etc.) and the input display shows where in the input the parse attempt was
+  * made, highlighted in bold, green, and underlined text within the rest of the input.
   */
 case object FxGUI extends DebugGUI {
   override def render(input: => String, tree: => DebugTree): Unit = {
