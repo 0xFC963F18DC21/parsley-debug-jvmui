@@ -29,6 +29,15 @@ private[frontend] class ThreeSplitPane(
   if (leftyFlip) items.addAll(innerPane, mainChild)
   else items.addAll(mainChild, innerPane)
 
+  // Keep width of sidebar constant when resizing window.
+  outer.width.addListener { (_, ov, nv) =>
+    // Get pixel size of old RHS and then apply it to the new one.
+    val currentDiv = (1 - dividers.head.getPosition) * ov.doubleValue()
+    val newDiv     = 1 - (currentDiv / nv.doubleValue())
+
+    dividers.collectFirst(_.setPosition(newDiv))
+  }
+
   // Set the initial starting locations of the splits.
   dividers.collectFirst(_.setPosition(defaultPositions._1))
   innerPane.dividers.collectFirst(_.setPosition(defaultPositions._2))
