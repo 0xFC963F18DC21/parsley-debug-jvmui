@@ -38,6 +38,14 @@ private[frontend] class ThreeSplitPane(
     dividers.collectFirst(_.setPosition(newDiv))
   }
 
+  outer.height.addListener { (_, ov, nv) =>
+    // Get pixel size of old top and then apply it to the new one.
+    val currentDiv = innerPane.dividers.head.getPosition * ov.doubleValue()
+    val newDiv     = currentDiv / nv.doubleValue()
+
+    innerPane.dividers.collectFirst(_.setPosition(newDiv))
+  }
+
   // Set the initial starting locations of the splits.
   dividers.collectFirst(_.setPosition(defaultPositions._1))
   innerPane.dividers.collectFirst(_.setPosition(defaultPositions._2))
