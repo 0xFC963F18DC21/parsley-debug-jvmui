@@ -1,4 +1,4 @@
-# Parsley Debugger, JVM Frontend
+# Parsley Debugger, JVM Visual Frontend
 
 [Parsley](https://github.com/j-mie6/Parsley) is a fast parser-combinator library for Scala based on
 Haskell's [Parsec](https://hackage.haskell.org/package/parsec).
@@ -12,7 +12,7 @@ by this frontend).
 
 ## Usage with SBT
 
-### Notice: The current version of this library depends on the `debug-dev` branch on [my fork of Parsley](https://github.com/0xFC963F18DC21/parsley), so it will be unusable until changes are merged into upstream.
+### Notice: The current version of this library depends on the `project-final` branch on [my fork of Parsley](https://github.com/0xFC963F18DC21/parsley), so it will be unusable until changes are merged into upstream.
 
 Currently, this is not being uploaded to a library repository like Maven or SonaType. Therefore,
 [JitPack](https://jitpack.io/) is currently the best way to include this in your SBT build:
