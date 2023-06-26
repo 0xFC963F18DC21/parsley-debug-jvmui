@@ -24,7 +24,8 @@ private[frontend] class TreeDisplay(
   tree: DebugTree,
   selected: ObjectProperty[Option[DebugTree]],
   zoomLevel: DoubleProperty
-) extends ScrollPane {
+)(implicit fontMult: Double)
+  extends ScrollPane {
   // Set visual parameters.
   prefHeight <== outer.height
 
@@ -82,7 +83,7 @@ private[frontend] object TreeDisplay {
   private def mkDTreeRect(
     dtree: DebugTree,
     selected: ObjectProperty[Option[DebugTree]]
-  ): Pane = {
+  )(implicit fontMult: Double): Pane = {
     // Shows the displayed name (renamed or otherwise) of the parser that produced the result tied
     // to this visual tree node.
     val nameText = new Text {
@@ -140,7 +141,8 @@ private[frontend] object TreeDisplay {
     dtree: DebugTree,
     selected: ObjectProperty[Option[DebugTree]]
   )(implicit
-    folds: mutable.ListBuffer[BooleanProperty]
+    folds: mutable.ListBuffer[BooleanProperty],
+    fontMult: Double
   ): Pane = {
     // Start with the current tree node's rectangle...
     val rootNode = mkDTreeRect(dtree, selected)
