@@ -261,8 +261,9 @@ private[frontend] object TreeDisplay {
 
       // Compensate for the white box for the inner panel:
       innerBox.minWidth <== Bindings.createDoubleBinding(
-        () => whiteBox.width() + relativeSize(2),
-        whiteBox.width
+        () => Math.max(whiteBox.width(), name.layoutBounds().getWidth) + relativeSize(2),
+        whiteBox.width,
+        name.layoutBounds
       )
 
       // The actual panel.
