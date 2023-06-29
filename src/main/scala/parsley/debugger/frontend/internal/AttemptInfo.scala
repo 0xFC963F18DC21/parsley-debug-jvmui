@@ -94,7 +94,10 @@ private[frontend] class Attempt(att: ParseAttempt)(implicit fontMult: Double) ex
 
   add(
     {
-      val resultText = new Text { text = "Result: "; font = defaultFont(1, FontWeight.Bold) }
+      val resultText = new Text {
+        text = if (att.success) "Result: " else ""
+        font = defaultFont(1, FontWeight.Bold)
+      }
       val itemText   = new Text { text = att.result.mkString; font = monoFont(1) }
       new TextFlow(resultText, itemText)
     },
