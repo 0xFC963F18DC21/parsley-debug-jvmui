@@ -17,16 +17,16 @@ private[frontend] class InputHighlighter(
   // Produce our local bindings for the text contents of our three texts.
   private val beforeBinding = Bindings.createStringBinding(
     () => {
-      if (selected().isDefined) fullInput.slice(0, selected().get.parseResults.get.fromOffset + 1)
+      if (selected().isDefined) fullInput.slice(0, selected().get.parseResults.get.fromOffset)
       else fullInput
     },
     selected
   )
   private val duringBinding = Bindings.createStringBinding(
     () => {
-      if (selected().isDefined)
+      if (selected().exists(_.parseResults.exists(att => att.fromOffset < att.toOffset)))
         fullInput.slice(
-          selected().get.parseResults.get.fromOffset + 1,
+          selected().get.parseResults.get.fromOffset,
           selected().get.parseResults.get.toOffset
         )
       else ""
