@@ -31,10 +31,10 @@ import scalafx.stage.Stage
   * offsets, result, etc.) and the input display shows where in the input the parse attempt was
   * made, highlighted in bold, green, and underlined text within the rest of the input.
   */
-class FxGUI(fontMult: Double) extends DebugGUI {
+class FxGUI(fontMult: Double) extends DebugFrontend {
   implicit private val gfMult: Double = fontMult
 
-  override def render(input: => String, tree: => DebugTree): Unit = {
+  override def process(input: => String, tree: => DebugTree): Unit = {
     // This forces initialisation of JavaFX's internals.
     // We don't actually need this for anything other than that.
     new JFXPanel()
