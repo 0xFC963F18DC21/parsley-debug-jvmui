@@ -12,7 +12,7 @@ by this frontend).
 
 ## Usage with SBT
 
-### Notice: The current version of this library depends on the `project-final` branch on [my fork of Parsley](https://github.com/MF42-DZH/parsley), so it will be unusable until changes are merged into upstream.
+### Notice: The current version of this library depends on the `dev` branch on [my fork of Parsley](https://github.com/MF42-DZH/parsley), so it will be unusable until changes are merged into upstream.
 
 Currently, this is not being uploaded to a library repository like Maven or SonaType. Therefore,
 [JitPack](https://jitpack.io/) is currently the best way to include this in your SBT build:
@@ -36,7 +36,7 @@ lazy val root = (project in file("."))
   )
 ```
 
-Currently, this library only works with Scala 2.13.10.
+Currently, this library only works with Scala 2.13.x.
 
 Documentation for usage is a TODO.
 
