@@ -12,7 +12,8 @@ import scalafx.scene.text.{FontWeight, Text, TextFlow}
 private[frontend] class InputHighlighter(
   fullInput: String,
   selected: ObjectProperty[Option[DebugTree]]
-) extends ScrollPane { outer =>
+)(implicit fontMult: Double)
+  extends ScrollPane { outer =>
   // Produce our local bindings for the text contents of our three texts.
   private val beforeBinding = Bindings.createStringBinding(
     () => {
@@ -23,7 +24,7 @@ private[frontend] class InputHighlighter(
   )
   private val duringBinding = Bindings.createStringBinding(
     () => {
-      if (selected().isDefined)
+      if (selected().exists(_.parseResults.exists(att => att.fromOffset < att.toOffset)))
         fullInput.slice(
           selected().get.parseResults.get.fromOffset,
           selected().get.parseResults.get.toOffset

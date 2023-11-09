@@ -1,4 +1,4 @@
-# Parsley Debugger, JVM Frontend
+# Parsley Debugger, JVM Visual Frontend
 
 [Parsley](https://github.com/j-mie6/Parsley) is a fast parser-combinator library for Scala based on
 Haskell's [Parsec](https://hackage.haskell.org/package/parsec).
@@ -12,14 +12,14 @@ by this frontend).
 
 ## Usage with SBT
 
-### Notice: The current version of this library depends on the `debug-dev` branch on [my fork of Parsley](https://github.com/0xFC963F18DC21/parsley), so it will be unusable until changes are merged into upstream.
+### Notice: The current version of this library depends on the `project-final` branch on [my fork of Parsley](https://github.com/MF42-DZH/parsley), so it will be unusable until changes are merged into upstream.
 
 Currently, this is not being uploaded to a library repository like Maven or SonaType. Therefore,
 [JitPack](https://jitpack.io/) is currently the best way to include this in your SBT build:
 
 1. Ensure that Parsley `v4.2.0` or higher is added as a dependency in your project.
 2. Add `resolvers += "jitpack" at "https://jitpack.io"` to your project settings in `build.sbt`.
-3. Finally, add `libraryDependencies += "com.github.0xfc963f18dc21" % "parsley-debug-jvmui" % "VERSION"`
+3. Finally, add `libraryDependencies += "com.github.mf42-dzh" % "parsley-debug-jvmui" % "VERSION"`
    to the same project's settings in `build.sbt`, where `VERSION` is the tag you want to use.
    If you want the bleeding edge updates, use `master-SNAPSHOT` as the version.
 
@@ -31,7 +31,7 @@ lazy val root = (project in file("."))
     ...
     resolvers += "jitpack" at "https://jitpack.io",
     ...
-    libraryDependencies += "com.github.0xFC963F18DC21" % "parsley-debug-jvmui" % "VERSION",
+    libraryDependencies += "com.github.mf42-dzh" % "parsley-debug-jvmui" % "VERSION",
     ...
   )
 ```

@@ -9,7 +9,9 @@ import scalafx.scene.control.ScrollPane.ScrollBarPolicy
 import scalafx.scene.layout.{GridPane, Priority, VBox}
 import scalafx.scene.text.{FontWeight, Text, TextFlow}
 
-private[frontend] class AttemptInfo(dtree: ObjectProperty[Option[DebugTree]]) extends ScrollPane {
+private[frontend] class AttemptInfo(dtree: ObjectProperty[Option[DebugTree]])(implicit
+  fontMult: Double
+) extends ScrollPane {
   // Makes sure the content doesn't go off the sides:
   fitToWidth = true
   hgrow = Priority.Always
@@ -41,7 +43,7 @@ private[frontend] class AttemptInfo(dtree: ObjectProperty[Option[DebugTree]]) ex
   )
 }
 
-private[frontend] class Attempt(att: ParseAttempt) extends GridPane {
+private[frontend] class Attempt(att: ParseAttempt)(implicit fontMult: Double) extends GridPane {
   // Visual parameters.
   background = simpleBackground(if (att.success) SuccessColour else FailureColour)
 
@@ -92,7 +94,10 @@ private[frontend] class Attempt(att: ParseAttempt) extends GridPane {
 
   add(
     {
-      val resultText = new Text { text = "Result: "; font = defaultFont(1, FontWeight.Bold) }
+      val resultText = new Text {
+        text = if (att.success) "Result: " else ""
+        font = defaultFont(1, FontWeight.Bold)
+      }
       val itemText   = new Text { text = att.result.mkString; font = monoFont(1) }
       new TextFlow(resultText, itemText)
     },

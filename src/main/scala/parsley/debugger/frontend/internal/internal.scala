@@ -42,7 +42,9 @@ package object internal {
     )
   )
 
-  private[frontend] def simpleBorder(style: BorderStrokeStyle): Border = new Border(
+  private[frontend] def simpleBorder(
+    style: BorderStrokeStyle
+  )(implicit globalMult: Double): Border = new Border(
     new BorderStroke(
       Color.Black,
       style,
@@ -51,22 +53,22 @@ package object internal {
     )
   )
 
-  private[frontend] def simpleInsets(multiplier: Double): Insets =
+  private[frontend] def simpleInsets(multiplier: Double)(implicit globalMult: Double): Insets =
     Insets(relativeSize(multiplier))
 
   // For easy use, all sizes will be relative to the default font size.
-  private[frontend] def relativeSize(multiplier: Double): Double =
-    Font.default.size * multiplier
+  private[frontend] def relativeSize(multiplier: Double)(implicit globalMult: Double): Double =
+    Font.default.size * multiplier * globalMult
 
   private[frontend] def defaultFont(
     multiplier: Double,
     weight: FontWeight = FontWeight.Normal
-  ): Font =
+  )(implicit globalMult: Double): Font =
     Font(Font.default.family, weight, relativeSize(multiplier))
 
   private[frontend] def monoFont(
     multiplier: Double,
     weight: FontWeight = FontWeight.Normal
-  ): Font =
+  )(implicit globalMult: Double): Font =
     Font("monospace", weight, relativeSize(multiplier))
 }
